@@ -1,0 +1,11 @@
+﻿temp
+
+# 外部コンテンツのディレクトリ構造のみ管理
+# https://zenn.dev/purigen/articles/67bb8de047e1bb#%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E6%A7%8B%E9%80%A0%E3%81%AE%E3%81%BF%E7%AE%A1%E7%90%86%E3%81%97%E3%81%9F%E3%81%84
+/3rdparties/**
+!/3rdparties/**/
+
+
+# リンクはいつでも含める
+!*.url
+!*.desktop
