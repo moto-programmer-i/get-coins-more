@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Get Coins More</title>
+    <link rel="stylesheet" href="./style.css" type="text/css">
     <script type="importmap">
       {
         "imports": {
@@ -11,9 +12,16 @@
         }
       }
     </script>
-    <script type="module" src="./main.js"></script>
+    <script type="module" src="./main.js" defer></script>
   </head>
   <body>
-    <canvas id="renderCanvas" style="width: 100%; height: 100%"></canvas>
+    <canvas id="renderCanvas" ></canvas>
+
+    <div id="ui">
+      <div id="lang">
+        <button id="en">English</button>
+        <button id="jp">日本語</button>
+      </div>
+    </div>
   </body>
 </html>
