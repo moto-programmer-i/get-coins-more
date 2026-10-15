@@ -1,38 +1,30 @@
-import { setVisibility } from "../dom-utils.js";
-import { LANG_EN, LANG_JP, setLang } from "../savedata.js";
+export const EN_SETTINGS = {
+    // アメリカだと10が逆に銀色
+    // https://blg.seirei.ac.jp/intl/files/usa_currency.pdf
+    coinColor: [0.40, 0.2, 0.07, 1],
+    bottomColor: [0.96, 0.96, 0.79, 1],
+    
+};
 
-/**
- * @type{() => void}
- */
-let onChanged;
+export class LangSettings {
+    /**
+     * @type{{bottomColor: [number, number, number, number]}}
+     */
+    static #current;
+    static init() {
+        // 本当はセーブデータの言語に応じて設定
+        this.#current = EN_SETTINGS;
 
-const ui = document.getElementById("ui");
-const lang = document.getElementById("lang");
+        // セーブデータがない場合は設定操作をawaitしないといけない
 
-// ボタンの初期化
-const en = document.getElementById("en");
-en.onclick = (ev) => {
-    setLang(LANG_EN);
-    showLang(false);
-    onChanged();
-} ;
-const jp = document.getElementById("jp");
-jp.onclick = (ev) => {
-    setLang(LANG_JP);
-    showLang(false);
-    onChanged();
-} ;
+        // 本来はpromiseを返してawaitしてもらう
+    }
 
-export function showLang(visible) {
-    setVisibility(ui, visible);
-    setVisibility(lang, visible);
+    static getCurrent() {
+        return this.#current;
+    }
 }
 
-/**
- * 
- * @param {() => void)} func 
- */
-export function changeLang(func) {
-    onChanged = func;
-    showLang(true);
+export function initLang() {
+    currentLangSettings = EN_SETTINGS;
 }
