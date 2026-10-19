@@ -4,10 +4,10 @@ const ui = document.getElementById("ui");
 
 /**
  * 
- * @param {string} childId ui要素の子要素のID
+ * @param {HTMLElement} child ui要素の子要素
  * @param {boolean} visibility 表示
  */
-export function showUI(childId, visibility) {
-    setVisibility(document.getElementById(childId), visibility);
+export function showUI(child, visibility) {
+    child.style.display = "block";
     setVisibility(ui, visibility);
 }

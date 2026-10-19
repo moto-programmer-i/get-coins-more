@@ -18,13 +18,27 @@
     <canvas id="renderCanvas" ></canvas>
 
     <div id="ui">
-      <div id="turn">
+      <p id="coin-count-wrapper">
+        <span id="coin-count"></span> coins left.
+      </p>
+      <div id="turn" class="selection">
         <p>
-          There are <span id="coinCount"></span> coins. Get first?
+          Get coins first?
         </p>
           <div class="buttons">
             <button id="first">Yes</button>
             <button id="second">No</button>
+          </div>
+      </div>
+
+      <div id="coin-get" class="selection">
+        <p>
+          How many coins do you get?
+        </p>
+          <div id="selection" class="buttons number">
+            <button id="one">1</button>
+            <button id="two">2</button>
+            <button id="three">3</button>
           </div>
       </div>
     </div>
