@@ -28,3 +28,5 @@ export class LangSettings {
 export function initLang() {
     currentLangSettings = EN_SETTINGS;
 }
+
+LangSettings.init();
