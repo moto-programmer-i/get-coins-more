@@ -7,8 +7,16 @@ import { setVisibility } from "../dom-utils.js";
 /** 底のコインの価値 */
 const bottomValue = 10;
 
+/** 底のコインの枚数 */
+const BOTTOM_COIN_COUNT = 1;
+
 /** 選択後の遅延（ミリ秒） */
 const  AFTER_SELECT_MILLISECONDS = 1000;
+
+
+
+const coinSpeed = {x: 0.2, y: 0.2};
+const coinDestination = {ceil: 4, floor: -4};
 
 /** コインの移動の遅延（ミリ秒） */
 const  COIN_DELAY_MILLISECONDS = 100;
@@ -33,6 +41,8 @@ let coinCount;
 let playerCoins = 0;
 let cpuCoins = 0;
 
+let bottomCoin;
+
 /**
  * プールの中で、現在一番上にあるコインのインデックス
  */
@@ -55,22 +65,31 @@ export function startStage(settings) {
     coinGet(true);
 }
 
-async function initCoins(settings) {
-    // 一番下のコインを初期値に
-    const bottomCoin = BabylonContext.getBottomCoin();
-    BabylonContext.initCoinPosition(bottomCoin);
+/**
+ * 一番下以外のコインを初期化
+ */
+async function initExceptBottom() {
+    // 上のコインが不要なら消す
+    const upper = BabylonContext.getUpperCoins();
+    const upperVisible = coinCount > (COIN_POOL_SIZE + BOTTOM_COIN_COUNT);
+    if(upperVisible) {
+        // 上のコインの数だけ高さ調整
+        const upperCount = coinCount - BOTTOM_COIN_COUNT;
+        upper.scaling.y = upperCount;
+        upper.position.y = bottomCoin.position.y 
+            // コインの高さ * （1枚→1、2枚→1.5、・・・）
+            + (COIN_OPTIONS.cylinderOptions.height) * (1 + (upperCount - BOTTOM_COIN_COUNT) * 0.5);
+    }
+    setMeshVisible(upper, upperVisible);
+    
+    
 
-    // 間のコインがなければ消す、あれば高さ調整
-    const coinCount = settings.getCoinCount();
-    const mid = BabylonContext.getMiddleCoins();
-    const midCount = coinCount - COIN_POOL_SIZE;
-    mid.scaling.y = midCount;
-    mid.position.y = bottomCoin.position.y + COIN_OPTIONS.cylinderOptions.height;
-    setMeshVisible(mid, midCount > 0);
+    // 面倒なので取る用のコインの位置はいつも同じ
+    // （例：20枚積まれたときに一番上に配置したりはしない）
 
     // 取る用のコインをその上に積む（[0]が下）
     const pool = BabylonContext.getPooledCoins();
-    let pooledCoinY = bottomCoin.position.y + midCount * COIN_OPTIONS.cylinderOptions.height;
+    let pooledCoinY = bottomCoin.position.y;
 
     // 全体の数 - 1（一番下のコイン）と、最大プール数 の少ない方がプールになる
     const poolCount = Math.min(coinCount - 1, COIN_POOL_SIZE);
@@ -86,6 +105,17 @@ async function initCoins(settings) {
     for(let i = poolCount; i < COIN_POOL_SIZE; ++i) {
         setMeshVisible(pool[i], false);
     }
+}
+
+async function initCoins(settings) {
+    // 一番下のコインを初期値に
+    bottomCoin = BabylonContext.getBottomCoin();
+    BabylonContext.initCoinPosition(bottomCoin);
+
+    // コインの数を設定
+    coinCount = settings.getCoinCount();
+
+    await initExceptBottom();
 }
 
 async function coinGet(isPlayerTurn) {
@@ -133,6 +163,9 @@ async function coinGet(isPlayerTurn) {
 
 
 async function playCoinTakeAnimation(count, isPlayerTurn) {
+    // 取られたコインを元の位置へ
+    initExceptBottom();
+
     const pool = BabylonContext.getPooledCoins();
     for(let i = 0; i < count; ++i) {
         // コインを移動させる
@@ -141,28 +174,24 @@ async function playCoinTakeAnimation(count, isPlayerTurn) {
         const moveIndex = poolIndex;
         
         if(isPlayerTurn) {
-            func.condition = () => pool[moveIndex].position.y < -2;
+            func.condition = () => pool[moveIndex].position.y < -coinDestination.ceil;
             func.run = () => {
-                pool[moveIndex].position.x += 0.2
-                pool[moveIndex].position.y -= 0.2;
+                pool[moveIndex].position.x += coinSpeed.x;
+                pool[moveIndex].position.y -= coinSpeed.y;
             };
         } else {
-            func.condition = () => pool[moveIndex].position.y > 2;
+            func.condition = () => pool[moveIndex].position.y > coinDestination.floor;
             func.run = () => {
-                pool[moveIndex].position.x += 0.2
-                pool[moveIndex].position.y += 0.2;
+                pool[moveIndex].position.x += coinSpeed.x
+                pool[moveIndex].position.y += coinSpeed.y;
             };
         }
         BabylonContext.addFuncInPhysicsLoop(func);
 
         // プールのインデックス更新
         --poolIndex;
-        if (poolIndex < 0) {
-            poolIndex = COIN_POOL_SIZE - 1;
 
-            // 高さ調整が必要
-        }
-
+        // 移動タイミングをずらす
         await new Promise(resolve => setTimeout(resolve, COIN_DELAY_MILLISECONDS));
     }
 }

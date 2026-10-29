@@ -48,9 +48,9 @@ export class BabylonContext {
     static #camera;
     static #bottomCoin;
     /**
-     * 間に存在するコイン（3D上、塊にしている）
+     * 一番下以外のコイン（3D上、塊にしている）
      */
-    static #middleCoins;
+    static #upperCoins;
     /**
      * 取得するときの移動するコイン
      * @type {Mesh[]}
@@ -83,12 +83,12 @@ export class BabylonContext {
         });
         this.initCoinPosition(this.#bottomCoin);
         addToScene(this.#scene, this.#bottomCoin);
-        this.#middleCoins =  createCylinder(this.#engine, COIN_OPTIONS.cylinderOptions);
-        this.#middleCoins.material = COIN_OPTIONS.material;
-        this.#middleCoins.position.x = INITIAL_POSITION.x;
-        this.#middleCoins.position.y = INITIAL_POSITION.y + COIN_OPTIONS.cylinderOptions.height;
-        this.#middleCoins.position.z = INITIAL_POSITION.z;
-        addToScene(this.#scene, this.#middleCoins);
+        this.#upperCoins =  createCylinder(this.#engine, COIN_OPTIONS.cylinderOptions);
+        this.#upperCoins.material = COIN_OPTIONS.material;
+        this.#upperCoins.position.x = INITIAL_POSITION.x;
+        this.#upperCoins.position.y = INITIAL_POSITION.y + COIN_OPTIONS.cylinderOptions.height;
+        this.#upperCoins.position.z = INITIAL_POSITION.z;
+        addToScene(this.#scene, this.#upperCoins);
 
         for(let i = 0; i < COIN_POOL_SIZE; ++i) {
             const pooledCoin = createCylinder(this.#engine, COIN_OPTIONS.cylinderOptions);
@@ -152,8 +152,8 @@ export class BabylonContext {
         return this.#bottomCoin;
     }
 
-    static getMiddleCoins() {
-        return this.#middleCoins;
+    static getUpperCoins() {
+        return this.#upperCoins;
     }
 
     static getPooledCoins() {
