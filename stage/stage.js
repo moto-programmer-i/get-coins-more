@@ -3,9 +3,10 @@ import { StageSettings } from "./stage-settings.js";
 import { BabylonContext, FuncInPhysicsLoop, COIN_POOL_SIZE, COIN_OPTIONS } from "../babylon-context.js";
 import { showUI } from "../ui/ui-utils.js";
 import { setVisibility } from "../dom-utils.js";
+import { cpuSelect } from "./cpu.js";
 
 /** 底のコインの価値 */
-const bottomValue = 10;
+const BOTTOM_VALUE = 10;
 
 /** 底のコインの枚数 */
 const BOTTOM_COIN_COUNT = 1;
@@ -21,12 +22,17 @@ const coinDestination = {ceil: 4, floor: -4};
 /** コインの移動の遅延（ミリ秒） */
 const  COIN_DELAY_MILLISECONDS = 100;
 
+/** CPU選択の遅延（ミリ秒） */
+const  CPU_SELECT_MILLISECONDS = 400;
+
 /** コインをとる選択肢の最大 */
 const MAX_SELECTION = 3;
 
 const turnElement = document.getElementById("turn");
 const coinGetElement = document.getElementById("coin-get");
 const coinCountHtml = document.getElementById("coin-count");
+const cpuCoinsHtml = document.getElementById("cpu-coins");
+const playerCoinsHtml = document.getElementById("player-coins");
 
 
 
@@ -115,7 +121,30 @@ async function initCoins(settings) {
     // コインの数を設定
     coinCount = settings.getCoinCount();
 
+    // 取られたコインを0に戻す
+    cpuCoinsHtml.innerText = cpuCoins = 0;
+    playerCoinsHtml.innerText = playerCoins = 0;
+
     await initExceptBottom();
+}
+
+async function syncCoins(selected, isPlayerTurn) {
+    // 残りのコインの更新
+    coinCount -= selected;
+    coinCountHtml.textContent = coinCount;
+
+    // 一番下のコインを取得した場合は足す
+    if (coinCount <= 0) {
+        selected += BOTTOM_VALUE;
+    }
+
+    // 取得したコインの更新
+    if (isPlayerTurn) {
+        playerCoinsHtml.innerText = playerCoins += selected;
+        
+    } else {
+        cpuCoinsHtml.innerText = cpuCoins += selected;
+    }
 }
 
 async function coinGet(isPlayerTurn) {
@@ -127,6 +156,16 @@ async function coinGet(isPlayerTurn) {
     do {
 
         // CPUの処理
+        if (!isPlayerTurn) {
+            // 早すぎると分かりづらいので遅延
+            await new Promise(resolve => setTimeout(resolve, CPU_SELECT_MILLISECONDS));
+
+            const cpuSelection = cpuSelect(coinCount, playerCoins, cpuCoins);
+            playCoinTakeAnimation(cpuSelection, isPlayerTurn);
+            syncCoins(cpuSelection, isPlayerTurn);
+            // ターン変更
+            isPlayerTurn = true;
+        }
 
         
         // プレイヤーの処理
@@ -146,17 +185,11 @@ async function coinGet(isPlayerTurn) {
         await Promise.any(selectArray).then(selected => {
             playCoinTakeAnimation(selected, isPlayerTurn);
 
-            // 取得したコインの計算（底はbottomValue倍）
-            coinCount -= selected;
-            if (coinCount <= 0) {
-                playerCoins += bottomValue + selected - 1;
-            } else {
-                playerCoins += selected;
-            }
-
-            // 残りのコインの更新
-            coinCountHtml.textContent = coinCount;
+           syncCoins(selected, isPlayerTurn);
         });
+
+        // ターン変更
+        isPlayerTurn = false;
 
     }while(coinCount > 0);
 }

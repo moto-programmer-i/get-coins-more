@@ -75,11 +75,28 @@ button {
     padding: 0ex 1ex;
 }
 
-#coin-count-wrapper {
+#cpu-coins-wrapper {
     display: block;
     position: fixed;
     right: 10px;
     top: 10px;
     background: unset;
+}
+
+#coin-count-wrapper {
+    display: block;
+    position: fixed;
+    left: 10px;
+    top: 10px;
+    background: unset;
     margin-block-start: 0px;
+    text-shadow: 5px 5px 5px black;
+}
+
+#player-coins-wrapper {
+    display: block;
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    background: unset;
 }
