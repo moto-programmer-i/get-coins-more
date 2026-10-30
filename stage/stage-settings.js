@@ -21,6 +21,7 @@ export class StageSettings {
  * 各ステージの設定
  */
 export const STAGE_SETTINGS = [
-    new StageSettings(9),
+    new StageSettings(4),
     new StageSettings(10),
+    new StageSettings(20),
 ];

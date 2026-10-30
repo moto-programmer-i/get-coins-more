@@ -1,18 +1,13 @@
 import { setMeshVisible } from "@babylonjs/lite";
 import { StageSettings } from "./stage-settings.js";
+import { BOTTOM_COIN_COUNT, BOTTOM_VALUE } from "./rule.js";
 import { BabylonContext, FuncInPhysicsLoop, COIN_POOL_SIZE, COIN_OPTIONS } from "../babylon-context.js";
 import { showUI } from "../ui/ui-utils.js";
 import { setVisibility } from "../dom-utils.js";
 import { cpuSelect } from "./cpu.js";
 
-/** 底のコインの価値 */
-const BOTTOM_VALUE = 10;
 
-/** 底のコインの枚数 */
-const BOTTOM_COIN_COUNT = 1;
 
-/** 選択後の遅延（ミリ秒） */
-const  AFTER_SELECT_MILLISECONDS = 1000;
 
 
 
@@ -135,7 +130,7 @@ async function syncCoins(selected, isPlayerTurn) {
 
     // 一番下のコインを取得した場合は足す
     if (coinCount <= 0) {
-        selected += BOTTOM_VALUE;
+        selected += BOTTOM_VALUE - BOTTOM_COIN_COUNT;
     }
 
     // 取得したコインの更新
@@ -148,8 +143,6 @@ async function syncCoins(selected, isPlayerTurn) {
 }
 
 async function coinGet(isPlayerTurn) {
-    const engine = BabylonContext.getEngine();
-    const scene = BabylonContext.getScene();   
     const bottomCoin =  BabylonContext.getBottomCoin();
 
 
