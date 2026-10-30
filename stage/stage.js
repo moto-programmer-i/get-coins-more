@@ -77,8 +77,8 @@ async function initExceptBottom() {
         const upperCount = coinCount - BOTTOM_COIN_COUNT;
         upper.scaling.y = upperCount;
         upper.position.y = bottomCoin.position.y 
-            // コインの高さ * （1枚→1、2枚→1.5、・・・）
-            + (COIN_OPTIONS.cylinderOptions.height) * (1 + (upperCount - BOTTOM_COIN_COUNT) * 0.5);
+            // コインの高さの半分 * （上のコインの枚数 + 一番下）
+            + (COIN_OPTIONS.cylinderOptions.height) * 0.5 * (upperCount + BOTTOM_COIN_COUNT);
     }
     setMeshVisible(upper, upperVisible);
     
