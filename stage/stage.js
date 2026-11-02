@@ -200,13 +200,13 @@ async function playCoinTakeAnimation(count, isPlayerTurn) {
         const moveIndex = poolIndex;
         
         if(isPlayerTurn) {
-            func.condition = () => pool[moveIndex].position.y < -coinDestination.ceil;
+            func.condition = () => pool[moveIndex].position.y < coinDestination.floor;
             func.run = () => {
                 pool[moveIndex].position.x += coinSpeed.x;
                 pool[moveIndex].position.y -= coinSpeed.y;
             };
         } else {
-            func.condition = () => pool[moveIndex].position.y > coinDestination.floor;
+            func.condition = () => pool[moveIndex].position.y > coinDestination.ceil;
             func.run = () => {
                 pool[moveIndex].position.x += coinSpeed.x
                 pool[moveIndex].position.y += coinSpeed.y;

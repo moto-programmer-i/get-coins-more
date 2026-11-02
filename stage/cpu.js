@@ -3,6 +3,13 @@ import { BOTTOM_COIN_COUNT, BOTTOM_VALUE, CPU_MAX } from "./rule.js";
 /** 最小 + 最大 */
 export const MIN_PLUS_MAX = 1 + CPU_MAX;
 
+/**
+ * 
+ * @param {number} coinCount 
+ * @param {number} playerCoins 
+ * @param {number} cpuCoins 
+ * @returns {number}
+ */
 export function cpuSelect(coinCount, playerCoins, cpuCoins) {
     // 全てのコインを取れる場合はとる
     if (coinCount <= CPU_MAX) {
