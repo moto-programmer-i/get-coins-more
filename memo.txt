@@ -1,3 +1,10 @@
+作業
+    スマホ対応
+    説明の表示（さすがにゲーム内で表示しよう）
+    効果音
+    BGM（再頒布の問題が解決すれば）
+    ズルして4枚とる機能
+
 英語版対応
     逆に1が銅色
     https://blg.seirei.ac.jp/intl/files/usa_currency.pdf
