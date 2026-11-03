@@ -137,9 +137,6 @@ async function initCoins(settings) {
     bottomCoin.rotation.x = COIN_OPTIONS.rotation;
     bottomCoin.scaling.set(COIN_OPTIONS.scaling.x, COIN_OPTIONS.scaling.y, COIN_OPTIONS.scaling.z);
 
-    // コインの数を設定
-    coinCount = settings.getCoinCount();
-
     // 取られたコインを0に戻す
     cpuCoinsHtml.innerText = cpuCoins = 0;
     playerCoinsHtml.innerText = playerCoins = 0;
