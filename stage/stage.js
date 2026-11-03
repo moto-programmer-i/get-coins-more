@@ -1,10 +1,11 @@
 import { setMeshVisible } from "@babylonjs/lite";
-import { StageSettings } from "./stage-settings.js";
+import { STAGE_SETTINGS, StageSettings } from "./stage-settings.js";
 import { BOTTOM_COIN_COUNT, BOTTOM_VALUE } from "./rule.js";
 import { BabylonContext, FuncInPhysicsLoop, COIN_POOL_SIZE, COIN_OPTIONS } from "../babylon-context.js";
 import { showUI } from "../ui/ui-utils.js";
-import { setVisibility } from "../dom-utils.js";
+import { setVisibility, setDisplay } from "../dom-utils.js";
 import { cpuSelect } from "./cpu.js";
+import { SAVE_DATA } from "../savedata.js";
 
 
 
@@ -26,10 +27,13 @@ const MAX_SELECTION = 3;
 
 const SCALE_RATE_ANIMATION = 1.001;
 const BOTTOM_SPEED = {x: 0.015, y: 0.025, cpuX: 0.03};
-const BOTTOM_DESTINATION = {ceil: 10, floor: -10};
+const BOTTOM_DESTINATION = {ceil: 4, floor: -4};
 
 const ROTATION_DELTA = 0.1;
 const ROTATION_COUNT_MAX = 60;
+
+/** 結果の表示の遅延（ミリ秒） */
+const  RESULT_DELAY_MILLISECONDS = 1500;
 
 
 const turnElement = document.getElementById("turn");
@@ -37,11 +41,15 @@ const coinGetElement = document.getElementById("coin-get");
 const coinCountHtml = document.getElementById("coin-count");
 const cpuCoinsHtml = document.getElementById("cpu-coins");
 const playerCoinsHtml = document.getElementById("player-coins");
-
-
-
-
 const selectButtons = document.getElementById("selection").children;
+const resultWrapperHtml = document.getElementById("result-wrapper");
+const resultWinHtml = document.getElementById("result-win");
+const resultDefeatHtml = document.getElementById("result-defeat");
+const resultDrawHtml = document.getElementById("result-draw");
+const resultCpuHtml = document.getElementById("result-cpu");
+const resultYouHtml = document.getElementById("result-you");
+
+let bottomCoin;
 
 
 /**
@@ -51,12 +59,17 @@ let coinCount;
 let playerCoins = 0;
 let cpuCoins = 0;
 
-let bottomCoin;
-
 /**
  * プールの中で、現在一番上にあるコインのインデックス
  */
 let poolIndex;
+
+let nextStage = false;
+
+/**
+ * コインの移動停止用
+ */
+let coinStop = true;
 
 /**
  * 
@@ -121,6 +134,8 @@ async function initCoins(settings) {
     // 一番下のコインを初期値に
     bottomCoin = BabylonContext.getBottomCoin();
     BabylonContext.initCoinPosition(bottomCoin);
+    bottomCoin.rotation.x = COIN_OPTIONS.rotation;
+    bottomCoin.scaling.set(COIN_OPTIONS.scaling.x, COIN_OPTIONS.scaling.y, COIN_OPTIONS.scaling.z);
 
     // コインの数を設定
     coinCount = settings.getCoinCount();
@@ -132,13 +147,39 @@ async function initCoins(settings) {
     await initExceptBottom();
 }
 
+async function showResult() {
+    // 早すぎると分かりづらいので遅延
+    await new Promise(resolve => setTimeout(resolve, RESULT_DELAY_MILLISECONDS));
+
+    // 取ったコインの数を表示
+    resultCpuHtml.innerText = cpuCoins;
+    resultYouHtml.innerText = playerCoins;
+    
+    // 勝敗を表示（勝ったら次のステージへ）
+    if(playerCoins > cpuCoins) {
+        nextStage = true;
+        setDisplay(resultWinHtml, true);
+    } else {
+        nextStage = false;
+        if(playerCoins === cpuCoins) {
+            setDisplay(resultDrawHtml, true);
+        } else  {
+            setDisplay(resultDefeatHtml, true);
+        }
+    }
+    
+    // 結果を表示
+    setVisibility(resultWrapperHtml, true);
+}
+
 async function syncCoins(selected, isPlayerTurn) {
     // 残りのコインの更新
     coinCount -= selected;
     coinCountHtml.textContent = coinCount;
 
     // 一番下のコインを取得した場合は足す
-    if (coinCount <= 0) {
+    const end = coinCount <= 0;
+    if (end) {
         selected += BOTTOM_VALUE - BOTTOM_COIN_COUNT;
     }
 
@@ -149,14 +190,14 @@ async function syncCoins(selected, isPlayerTurn) {
     } else {
         cpuCoinsHtml.innerText = cpuCoins += selected;
     }
+
+    if(end) {
+        showResult();
+    }
 }
 
 async function coinGet(isPlayerTurn) {
-    const bottomCoin =  BabylonContext.getBottomCoin();
-
-
     do {
-
         // CPUの処理
         if (!isPlayerTurn) {
             // 早すぎると分かりづらいので遅延
@@ -203,7 +244,7 @@ async function playBottomCoinTakeAnimation(isPlayerTurn) {
      const bottomMove = new FuncInPhysicsLoop();
     let rotationCount = 0;
      if (isPlayerTurn) {
-        bottomMove.condition = () => bottom.position.y < BOTTOM_DESTINATION.floor;
+        bottomMove.condition = () => coinStop || bottom.position.y < BOTTOM_DESTINATION.floor;
         bottomMove.run = () => {
             bottom.position.x += BOTTOM_SPEED.x;
             bottom.position.y -= BOTTOM_SPEED.y;
@@ -214,7 +255,7 @@ async function playBottomCoinTakeAnimation(isPlayerTurn) {
             ++rotationCount;
         };
      } else {
-        bottomMove.condition = () => bottom.position.y > BOTTOM_DESTINATION.ceil;
+        bottomMove.condition = () => coinStop || bottom.position.y > BOTTOM_DESTINATION.ceil;
         bottomMove.run = () => {
             bottom.position.x += BOTTOM_SPEED.cpuX;
             bottom.position.y += BOTTOM_SPEED.y;
@@ -231,6 +272,9 @@ async function playBottomCoinTakeAnimation(isPlayerTurn) {
 }
 
 async function playCoinTakeAnimation(count, isPlayerTurn) {
+    // リトライ時に強制停止が必要なので、ここでOFFに初期設定する必要がある
+    coinStop = false;
+
     // 取られたコインを元の位置へ
     initExceptBottom();
 
@@ -249,13 +293,13 @@ async function playCoinTakeAnimation(count, isPlayerTurn) {
         const moveIndex = poolIndex;
         
         if(isPlayerTurn) {
-            func.condition = () => pool[moveIndex].position.y < COIN_DESTINATION.floor;
+            func.condition = () => coinStop || pool[moveIndex].position.y < COIN_DESTINATION.floor;
             func.run = () => {
                 pool[moveIndex].position.x += COIN_SPEED.x;
                 pool[moveIndex].position.y -= COIN_SPEED.y;
             };
         } else {
-            func.condition = () => pool[moveIndex].position.y > COIN_DESTINATION.ceil;
+            func.condition = () => coinStop || pool[moveIndex].position.y > COIN_DESTINATION.ceil;
             func.run = () => {
                 pool[moveIndex].position.x += COIN_SPEED.x
                 pool[moveIndex].position.y += COIN_SPEED.y;
@@ -281,3 +325,21 @@ document.getElementById("second").onclick = () => {
     coinGet(false);
     showUI(ID_TURN, false);
 };
+
+// リトライ
+resultWrapperHtml.addEventListener("click", (ev) => {
+    // 結果の画面を消しておく
+    setDisplay(resultWinHtml, false);
+    setDisplay(resultDrawHtml, false);
+    setDisplay(resultDefeatHtml, false);
+    setVisibility(resultWrapperHtml, false);
+
+    // コインの移動を停止
+    coinStop = true;
+
+    //次のステージがあるなら次へ
+    if (nextStage && SAVE_DATA.stageIndex + 1 < STAGE_SETTINGS.length) {
+        ++SAVE_DATA.stageIndex;
+    }
+    startStage(STAGE_SETTINGS[SAVE_DATA.stageIndex]);
+});

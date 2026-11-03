@@ -13,7 +13,7 @@ canvas {
     height: 100%;
 }
 
-p, button {
+p, button, table {
     font-size: xxx-large;
     color: white;
 }
@@ -26,6 +26,10 @@ p {
 button {
     line-height: 3ex;
     background-color: black;
+}
+
+.number {
+    text-align: right;
 }
 
 #ui {
@@ -99,4 +103,50 @@ button {
     right: 10px;
     bottom: 10px;
     background: unset;
+}
+
+#result-wrapper {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(51, 51, 76, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden;
+}
+
+#result {
+    padding: 20px;
+    background: darkgreen;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#result p {
+    text-align: center;
+}
+
+#result button {
+    margin: auto 0;
+}
+
+.title {
+    display: none;
+    font-family: serif;
+    font-weight: bolder;
+    text-shadow: 2px 2px 5px black;
+}
+.title.win {
+    color: #ffff90;
+}
+.title.defeat {
+    color: #0000ff;
+}
+.title.draw {
+    color: #00ff00;
 }

@@ -28,7 +28,9 @@ const INITIAL_CAMERA = {
         baseColorFactor: LangSettings.getCurrent().coinColor,
         metallicFactor: 1.0,
         roughnessFactor: 0.47
-    })
+    }),
+    rotation: 0,
+    scaling: {x: 1, y: 1, z: 1}
 };
 
 export class FuncInPhysicsLoop {
