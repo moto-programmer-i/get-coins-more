@@ -5,7 +5,7 @@ const LOOP_INTERVAL_MILLISECONDS = 1000 / 50;
 
 export const COIN_POOL_SIZE = 4;
 
-export const INITIAL_POSITION = { x: -3, y: 0, z: 0};
+export const INITIAL_POSITION = { x: 0, y: 0, z: 0};
 
 /**
  *  Babylon defaults: alpha = -π/2, beta = π/2
@@ -34,12 +34,20 @@ const INITIAL_CAMERA = {
 };
 
 export class FuncInPhysicsLoop {
+    #key
+    constructor(key) {
+        this.#key = key;
+    }
     run(){}
     /**
      * 終了条件
      * @returns 終了する場合はtrue 
      */
     condition(){return true;}
+
+    getKey() {
+        return this.#key;
+    }
 }
 
 
@@ -172,6 +180,15 @@ export class BabylonContext {
      */
     static addFuncInPhysicsLoop(func) {
         this.#funcsInPhysicsLoop.push(func);
+    }
+
+    static deleteFuncByKey(key) {
+        for(let i = 0; i < this.#funcsInPhysicsLoop.length; ++i) {
+            if(key === this.#funcsInPhysicsLoop[i].getKey()) {
+                this.#funcsInPhysicsLoop.splice(i , 1);
+                --i;
+            }
+        }
     }
 
     static initCoinPosition(coin) {

@@ -12,7 +12,7 @@ import { SAVE_DATA } from "../savedata.js";
 
 
 
-const COIN_SPEED = {x: 0.2, y: 0.2};
+const COIN_SPEED = {x: 0.05, y: 0.1, z: 0.1};
 const COIN_DESTINATION = {ceil: 4, floor: -4};
 
 /** コインの移動の遅延（ミリ秒） */
@@ -26,7 +26,7 @@ const MAX_SELECTION = 3;
 
 
 const SCALE_RATE_ANIMATION = 1.001;
-const BOTTOM_SPEED = {x: 0.015, y: 0.025, cpuX: 0.03};
+const BOTTOM_SPEED = {y: 0.025, z: 0.1};
 const BOTTOM_DESTINATION = {ceil: 4, floor: -4};
 
 const ROTATION_DELTA = 0.1;
@@ -34,6 +34,9 @@ const ROTATION_COUNT_MAX = 60;
 
 /** 結果の表示の遅延（ミリ秒） */
 const  RESULT_DELAY_MILLISECONDS = 1500;
+
+/** ループ関数強制停止用のキー */
+const COIN_MOVE_FUNC_KEY = "COIN_MOVE";
 
 
 const turnElement = document.getElementById("turn");
@@ -67,11 +70,6 @@ let poolIndex;
 let nextStage = false;
 
 /**
- * コインの移動停止用
- */
-let coinStop = true;
-
-/**
  * 
  * @param {StageSettings} settings 
  */
@@ -92,6 +90,9 @@ export function startStage(settings) {
  * 一番下以外のコインを初期化
  */
 async function initExceptBottom() {
+    // コインの移動を停止
+    BabylonContext.deleteFuncByKey(COIN_MOVE_FUNC_KEY);
+
     // 上のコインが不要なら消す
     const upper = BabylonContext.getUpperCoins();
     const upperVisible = coinCount > (COIN_POOL_SIZE + BOTTOM_COIN_COUNT);
@@ -212,8 +213,10 @@ async function coinGet(isPlayerTurn) {
         showUI(coinGetElement, true);
 
 
-        // 選択肢が押されるのを待つ（数が足りない場合は非表示）
+        // 選択肢が押されるのを待つ
+        // コインを1個とる選択肢は常に表示される
         const selectArray = [new Promise(resolve => {selectButtons.item(0).onclick =() => resolve(1)})];
+        // 2個以上の選択肢は足りない場合は非表示
         for(let select = 2;  select <= MAX_SELECTION; ++select) {
             const button = selectButtons.item(select - 1);
             const enable = select <= coinCount;
@@ -237,14 +240,14 @@ async function coinGet(isPlayerTurn) {
 
 
 async function playBottomCoinTakeAnimation(isPlayerTurn) {
-     const bottom = BabylonContext.getBottomCoin();
-     const bottomMove = new FuncInPhysicsLoop();
+    const bottom = BabylonContext.getBottomCoin();
+    const bottomMove = new FuncInPhysicsLoop(COIN_MOVE_FUNC_KEY);
     let rotationCount = 0;
      if (isPlayerTurn) {
-        bottomMove.condition = () => coinStop || bottom.position.y < BOTTOM_DESTINATION.floor;
+        bottomMove.condition = () => bottom.position.y < BOTTOM_DESTINATION.floor;
         bottomMove.run = () => {
-            bottom.position.x += BOTTOM_SPEED.x;
             bottom.position.y -= BOTTOM_SPEED.y;
+            bottom.position.z -= BOTTOM_SPEED.z;
             bottom.scaling.set(bottom.scaling.x * SCALE_RATE_ANIMATION, bottom.scaling.y * SCALE_RATE_ANIMATION, bottom.scaling.z * SCALE_RATE_ANIMATION);
             if (rotationCount < ROTATION_COUNT_MAX) {
                 bottom.rotation.x += ROTATION_DELTA;
@@ -252,10 +255,10 @@ async function playBottomCoinTakeAnimation(isPlayerTurn) {
             ++rotationCount;
         };
      } else {
-        bottomMove.condition = () => coinStop || bottom.position.y > BOTTOM_DESTINATION.ceil;
+        bottomMove.condition = () => bottom.position.y > BOTTOM_DESTINATION.ceil;
         bottomMove.run = () => {
-            bottom.position.x += BOTTOM_SPEED.cpuX;
             bottom.position.y += BOTTOM_SPEED.y;
+            bottom.position.z += BOTTOM_SPEED.z;
             bottom.scaling.set(bottom.scaling.x * SCALE_RATE_ANIMATION, bottom.scaling.y * SCALE_RATE_ANIMATION, bottom.scaling.z * SCALE_RATE_ANIMATION);
              if (rotationCount < ROTATION_COUNT_MAX) {
                 bottom.rotation.x += ROTATION_DELTA;
@@ -269,9 +272,6 @@ async function playBottomCoinTakeAnimation(isPlayerTurn) {
 }
 
 async function playCoinTakeAnimation(count, isPlayerTurn) {
-    // リトライ時に強制停止が必要なので、ここでOFFに初期設定する必要がある
-    coinStop = false;
-
     // 取られたコインを元の位置へ
     initExceptBottom();
 
@@ -286,20 +286,22 @@ async function playCoinTakeAnimation(count, isPlayerTurn) {
 
         // コインを移動させる
         // [0]が下なので末尾から
-        const func = new FuncInPhysicsLoop();
+        const func = new FuncInPhysicsLoop(COIN_MOVE_FUNC_KEY);
         const moveIndex = poolIndex;
         
         if(isPlayerTurn) {
-            func.condition = () => coinStop || pool[moveIndex].position.y < COIN_DESTINATION.floor;
+            func.condition = () => pool[moveIndex].position.y < COIN_DESTINATION.floor;
             func.run = () => {
                 pool[moveIndex].position.x += COIN_SPEED.x;
                 pool[moveIndex].position.y -= COIN_SPEED.y;
+                pool[moveIndex].position.z -= COIN_SPEED.z;
             };
         } else {
-            func.condition = () => coinStop || pool[moveIndex].position.y > COIN_DESTINATION.ceil;
+            func.condition = () => pool[moveIndex].position.y > COIN_DESTINATION.ceil;
             func.run = () => {
-                pool[moveIndex].position.x += COIN_SPEED.x
+                pool[moveIndex].position.x += COIN_SPEED.x;
                 pool[moveIndex].position.y += COIN_SPEED.y;
+                pool[moveIndex].position.z += COIN_SPEED.z;
             };
         }
         BabylonContext.addFuncInPhysicsLoop(func);
@@ -332,7 +334,7 @@ resultWrapperHtml.addEventListener("click", (ev) => {
     setVisibility(resultWrapperHtml, false);
 
     // コインの移動を停止
-    coinStop = true;
+    BabylonContext.deleteFuncByKey(COIN_MOVE_FUNC_KEY);
 
     //次のステージがあるなら次へ
     if (nextStage && SAVE_DATA.stageIndex + 1 < STAGE_SETTINGS.length) {
