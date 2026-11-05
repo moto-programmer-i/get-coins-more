@@ -12,8 +12,7 @@ import { SAVE_DATA } from "../savedata.js";
 
 
 
-const COIN_SPEED = {x: 0.05, y: 0.1, z: 0.1};
-const COIN_DESTINATION = {ceil: 4, floor: -4};
+
 
 /** コインの移動の遅延（ミリ秒） */
 const  COIN_DELAY_MILLISECONDS = 100;
@@ -25,9 +24,18 @@ const  CPU_SELECT_MILLISECONDS = 400;
 const MAX_SELECTION = 3;
 
 
+
+
+const COIN_SPEED = {x: 0.1, z: 0.2};
+const BOTTOM_SPEED_RATE = 0.125;
+const BOTTOM_SPEED = {
+    x: COIN_SPEED.x * BOTTOM_SPEED_RATE,
+    z: COIN_SPEED.z * BOTTOM_SPEED_RATE,
+};
+const COIN_DESTINATION = {ceil: 8, floor: -4};
+const BOTTOM_DESTINATION = {ceil: 6, floor: -4};
+
 const SCALE_RATE_ANIMATION = 1.001;
-const BOTTOM_SPEED = {y: 0.025, z: 0.1};
-const BOTTOM_DESTINATION = {ceil: 4, floor: -4};
 
 const ROTATION_DELTA = 0.1;
 const ROTATION_COUNT_MAX = 60;
@@ -244,9 +252,9 @@ async function playBottomCoinTakeAnimation(isPlayerTurn) {
     const bottomMove = new FuncInPhysicsLoop(COIN_MOVE_FUNC_KEY);
     let rotationCount = 0;
      if (isPlayerTurn) {
-        bottomMove.condition = () => bottom.position.y < BOTTOM_DESTINATION.floor;
+        bottomMove.condition = () => bottom.position.z < BOTTOM_DESTINATION.floor;
         bottomMove.run = () => {
-            bottom.position.y -= BOTTOM_SPEED.y;
+            bottom.position.x += BOTTOM_SPEED.x;
             bottom.position.z -= BOTTOM_SPEED.z;
             bottom.scaling.set(bottom.scaling.x * SCALE_RATE_ANIMATION, bottom.scaling.y * SCALE_RATE_ANIMATION, bottom.scaling.z * SCALE_RATE_ANIMATION);
             if (rotationCount < ROTATION_COUNT_MAX) {
@@ -255,9 +263,9 @@ async function playBottomCoinTakeAnimation(isPlayerTurn) {
             ++rotationCount;
         };
      } else {
-        bottomMove.condition = () => bottom.position.y > BOTTOM_DESTINATION.ceil;
+        bottomMove.condition = () => bottom.position.z > BOTTOM_DESTINATION.ceil;
         bottomMove.run = () => {
-            bottom.position.y += BOTTOM_SPEED.y;
+            bottom.position.x += BOTTOM_SPEED.x;
             bottom.position.z += BOTTOM_SPEED.z;
             bottom.scaling.set(bottom.scaling.x * SCALE_RATE_ANIMATION, bottom.scaling.y * SCALE_RATE_ANIMATION, bottom.scaling.z * SCALE_RATE_ANIMATION);
              if (rotationCount < ROTATION_COUNT_MAX) {
@@ -290,17 +298,15 @@ async function playCoinTakeAnimation(count, isPlayerTurn) {
         const moveIndex = poolIndex;
         
         if(isPlayerTurn) {
-            func.condition = () => pool[moveIndex].position.y < COIN_DESTINATION.floor;
+            func.condition = () => pool[moveIndex].position.z < COIN_DESTINATION.floor;
             func.run = () => {
                 pool[moveIndex].position.x += COIN_SPEED.x;
-                pool[moveIndex].position.y -= COIN_SPEED.y;
                 pool[moveIndex].position.z -= COIN_SPEED.z;
             };
         } else {
-            func.condition = () => pool[moveIndex].position.y > COIN_DESTINATION.ceil;
+            func.condition = () => pool[moveIndex].position.z > COIN_DESTINATION.ceil;
             func.run = () => {
                 pool[moveIndex].position.x += COIN_SPEED.x;
-                pool[moveIndex].position.y += COIN_SPEED.y;
                 pool[moveIndex].position.z += COIN_SPEED.z;
             };
         }
