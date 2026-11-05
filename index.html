@@ -1,83 +1,97 @@
 <!doctype html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Get Coins More</title>
-    <link rel="stylesheet" href="./style.css" type="text/css">
-    <script type="importmap">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Get Coins More</title>
+  <link rel="stylesheet" href="./style.css" type="text/css">
+  <script type="importmap">
       {
         "imports": {
           "@babylonjs/lite": "https://cdn.jsdelivr.net/npm/@babylonjs/lite@1.28.0/dist/index.js"
         }
       }
     </script>
-    <script type="module" src="./main.js" defer></script>
-  </head>
-  <body>
-    <canvas id="renderCanvas" ></canvas>
+  <script type="module" src="./main.js" defer></script>
+</head>
 
-    <div id="ui">
-      <p id="cpu-coins-wrapper">
-        CPU: <span id="cpu-coins"></span>
-      </p>
+<body>
+  <canvas id="renderCanvas"></canvas>
+
+  <div id="ui">
+    <div class="ui-header">
       <p id="coin-count-wrapper">
         <span id="coin-count"></span> coins are left.
       </p>
-      <div id="turn" class="selection">
-        <p>
-          Get coins first?
-        </p>
-          <div class="buttons">
-            <button id="first">Yes</button>
-            <button id="second">No</button>
-          </div>
-      </div>
+      <p id="cpu-coins-wrapper">
+        CPU: <span id="cpu-coins"></span>
+      </p>
+    </div>
 
-      <div id="coin-get" class="selection">
-        <p>
-          How many coins do you get?
+    <div class="ui-footer">
+      <div class="ui-fotter-top">
+        <p id="player-coins-wrapper">
+          YOU: <span id="player-coins"></span>
         </p>
+      </div>
+      <div class="ui-footer-bottom">
+        <div id="coin-get" class="selection">
+          <p>
+            How many coins do you get?
+          </p>
           <div id="selection" class="buttons number">
             <button id="one">1</button>
             <button id="two">2</button>
             <button id="three">3</button>
           </div>
-      </div>
-
-       <p id="player-coins-wrapper">
-        YOU: <span id="player-coins"></span>
-      </p>
-      <div id="result-wrapper">
-        <div id="result">
-          <p id="result-win" class="title win">
-            WIN
-          </p>
-          <p id="result-defeat" class="title defeat">
-            DEFEAT
-          </p>
-          <p id="result-draw" class="title draw">
-            DRAW
-          </p>
-          <br>
-          <table>
-            <tbody>
-              <tr>
-                <td>CPU:</td>
-                <td id="result-cpu" class="number"></td>
-              </tr>
-              <tr>
-                <td>YOU:</td>
-                <td id="result-you"  class="number">10</td>
-              </tr>
-            </tbody>
-          </table>
-          <br>
-          <button type="button">New game</button>
-          
         </div>
       </div>
-      
     </div>
-  </body>
+
+
+    <div id="turn" class="selection">
+      <p>
+        Get coins first?
+      </p>
+      <div class="buttons">
+        <button id="first">Yes</button>
+        <button id="second">No</button>
+      </div>
+    </div>
+
+
+    <div id="result-wrapper">
+      <div id="result">
+        <p id="result-win" class="title win">
+          WIN
+        </p>
+        <p id="result-defeat" class="title defeat">
+          DEFEAT
+        </p>
+        <p id="result-draw" class="title draw">
+          DRAW
+        </p>
+        <br>
+        <table>
+          <tbody>
+            <tr>
+              <td>CPU:</td>
+              <td id="result-cpu" class="number"></td>
+            </tr>
+            <tr>
+              <td>YOU:</td>
+              <td id="result-you" class="number">10</td>
+            </tr>
+          </tbody>
+        </table>
+        <br>
+        <button type="button">New game</button>
+
+      </div>
+    </div>
+
+  </div>
+</body>
+
 </html>

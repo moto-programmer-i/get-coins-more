@@ -42,29 +42,62 @@ button {
     
 
     display: flex;
-    justify-content: center;
-    align-items: flex-end;
+    flex-direction: column;
 }
 
 #ui > * {
    display: none;
-    /* 
-        background-color: midnightblue;
-        opacity: 0.9; だと子要素のopacityを1にできない
-        https://media.aguaps.com/tips/opacity-rgba/ 
-    */
-    background: rgba(25, 25, 112, 0.9);
    height: min-content;
    padding-bottom: 2ex;
 }
 
+
+#ui > .ui-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+#coin-count-wrapper {
+    margin-block-start: 0px;
+    text-shadow: 5px 5px 5px black;
+}
+#cpu-coins-wrapper {
+    margin-left: auto;
+}
+
+#ui > .ui-footer {
+    margin-top: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#player-coins-wrapper {
+    text-align: right;
+}
+
+.ui-footer-bottom {
+    display: flex;
+    justify-content: center;
+}
+
+
 .selection {
+    flex: initial;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     height: 100%;
     gap: 2%;
+     /* 
+        background-color: midnightblue;
+        opacity: 0.9; だと子要素のopacityを1にできない
+        https://media.aguaps.com/tips/opacity-rgba/ 
+    */
+    background: rgba(25, 25, 112, 0.9);
 }
 
 .buttons {
@@ -79,31 +112,7 @@ button {
     padding: 0ex 1ex;
 }
 
-#cpu-coins-wrapper {
-    display: block;
-    position: fixed;
-    right: 10px;
-    top: 10px;
-    background: unset;
-}
 
-#coin-count-wrapper {
-    display: block;
-    position: fixed;
-    left: 10px;
-    top: 10px;
-    background: unset;
-    margin-block-start: 0px;
-    text-shadow: 5px 5px 5px black;
-}
-
-#player-coins-wrapper {
-    display: block;
-    position: fixed;
-    right: 10px;
-    bottom: 10px;
-    background: unset;
-}
 
 #result-wrapper {
     position: fixed;
