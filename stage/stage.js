@@ -90,6 +90,9 @@ export function startStage(settings) {
     // // 先攻後攻決め
     // showUI(turnElement, true);
 
+    // 開始のSE（user gestureがない場合はならないこともある）
+    BabylonContext.playStartSound();
+
     // 開発用
     coinGet(true);
 }
@@ -165,6 +168,7 @@ async function showResult() {
     if(playerCoins > cpuCoins) {
         nextStage = true;
         setDisplay(resultWinHtml, true);
+        BabylonContext.playWinSound();
     } else {
         nextStage = false;
         if(playerCoins === cpuCoins) {
@@ -277,6 +281,9 @@ async function playBottomCoinTakeAnimation(isPlayerTurn) {
      }
      
     BabylonContext.addFuncInPhysicsLoop(bottomMove);
+
+    // コイン取得時の効果音
+    BabylonContext.playGetBottomSound();
 }
 
 async function playCoinTakeAnimation(count, isPlayerTurn) {
@@ -314,6 +321,9 @@ async function playCoinTakeAnimation(count, isPlayerTurn) {
 
         // プールのインデックス更新
         --poolIndex;
+
+        // コイン取得時の効果音
+        BabylonContext.playGetSound();
 
         // 移動タイミングをずらす
         await new Promise(resolve => setTimeout(resolve, COIN_DELAY_MILLISECONDS));

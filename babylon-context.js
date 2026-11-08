@@ -1,5 +1,6 @@
-import { createArcRotateCamera, createEngine, createSceneContext, createHemisphericLight, addToScene, registerScene, startEngine, createCylinder, createPbrMaterial, loadTexture2D, setMeshVisible} from "@babylonjs/lite";
+import { createArcRotateCamera, createEngine, createSceneContext, createHemisphericLight, addToScene, registerScene, startEngine, createCylinder, createPbrMaterial, loadTexture2D, createAudioEngineAsync, unlockAudioEngineAsync, createSoundAsync, playSound} from "@babylonjs/lite";
 import { LangSettings } from "./ui/lang.js";
+import { SOUND_SOURCES, SOUND_OPTIONS } from "./se/sound.js";
 
 const LOOP_INTERVAL_MILLISECONDS = 1000 / 50;
 
@@ -72,6 +73,12 @@ export class BabylonContext {
      */
     static #funcsInPhysicsLoop = [];
 
+    static #audioEngine;
+    static #seStart;
+    static #seGet;
+    static #seGetBottom;
+    static #seWin;
+
     /**
      * 
      * @param {HTMLCanvasElement} canvas 
@@ -108,25 +115,16 @@ export class BabylonContext {
             addToScene(this.#scene, pooledCoin);
         }
 
-        // A sphere with a simple PBR material
-        // const sphere = createSphere(this.#engine, { segments: 16, diameter: 2 });
-        // sphere.material = createPbrMaterial({ baseColorFactor: [0.9, 0.1, 0.1, 1], metallicFactor: 0.1, roughnessFactor: 0.4 });
-        // addToScene(this.#scene, sphere);
-
-        // // Load a model — returns an AssetContainer; addToScene registers its
-        // // meshes, transform hierarchy, and animation groups for you.
-        // addToScene(scene, await loadGltf(engine, 
-        //     // "https://playground.babylonjs.com/scenes/BoomBox.glb"
-        //     // "manyTextures.glb"
-        //     // "hero.glb"
-        //     // "heroin.glb"
-        //     // "mercenary.glb"
-        //     "princess_summer.glb"
-        // ));
-
         // Frame the loaded model automatically
         this.#camera  = createArcRotateCamera(INITIAL_CAMERA.alpha, INITIAL_CAMERA.beta, INITIAL_CAMERA.radius, INITIAL_CAMERA.target);
         this.#scene.camera = this.#camera;
+
+        // サウンドの初期化（面倒なので全部awaitする、うまいこと非同期で待つ方法不明）
+        this.#audioEngine = await createAudioEngineAsync();
+        this.#seStart = await createSoundAsync(this.#audioEngine, SOUND_SOURCES.start);
+        this.#seGet = await createSoundAsync(this.#audioEngine, SOUND_SOURCES.get);
+        this.#seGetBottom = await createSoundAsync(this.#audioEngine, SOUND_SOURCES.getBottom);
+        this.#seWin = await createSoundAsync(this.#audioEngine, SOUND_SOURCES.win);
 
         // 3. Register (after everything is added)
         await registerScene(this.#scene);
@@ -195,5 +193,20 @@ export class BabylonContext {
         coin.position.x = INITIAL_POSITION.x;
         coin.position.y = INITIAL_POSITION.y;
         coin.position.z = INITIAL_POSITION.z;
+    }
+
+    static playStartSound() {
+        playSound(this.#seStart);
+    }
+
+    static playGetSound() {
+        playSound(this.#seGet);
+    }
+
+    static playGetBottomSound() {
+        playSound(this.#seGetBottom, SOUND_OPTIONS.getBottom);
+    }
+    static playWinSound() {
+        playSound(this.#seWin, SOUND_OPTIONS.win);
     }
 }
