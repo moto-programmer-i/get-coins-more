@@ -4,9 +4,14 @@ import { SAVE_DATA } from "./savedata.js";
 import { startStage } from "./stage/stage.js";
 import { STAGE_SETTINGS } from "./stage/stage-settings.js";
 import { BabylonContext } from "./babylon-context.js";
+import { setDisplay } from "./dom-utils.js";
 
 const canvas = document.getElementById("renderCanvas");
 await BabylonContext.init(canvas);
 
 startStage(STAGE_SETTINGS[SAVE_DATA.stageIndex]);
+
+document.getElementById("rule").onclick = () => {
+    setDisplay(rule, false);
+}
 

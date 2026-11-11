@@ -13,7 +13,7 @@ canvas {
     height: 100%;
 }
 
-p, button, table {
+p, button, table, img {
     font-size: xxx-large;
     color: white;
 }
@@ -21,6 +21,32 @@ p, button, table {
 p {
     margin-block-start: 0px;
     margin-block-end: 0.1em;
+}
+
+img {
+    display: block;
+    width: auto;
+    height: auto;
+}
+
+#rule {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgb(51, 51, 76);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.caution {
+    color: red;
+}
+
+#rule img {
+    height: 5ex;    
 }
 
 button {
