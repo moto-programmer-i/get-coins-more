@@ -83,6 +83,9 @@ button {
     justify-content: center;
 }
 
+#coin-get {
+    display: none;
+}
 
 .selection {
     flex: initial;

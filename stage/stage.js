@@ -2,8 +2,7 @@ import { setMeshVisible } from "@babylonjs/lite";
 import { STAGE_SETTINGS, StageSettings } from "./stage-settings.js";
 import { BOTTOM_COIN_COUNT, BOTTOM_VALUE } from "./rule.js";
 import { BabylonContext, FuncInPhysicsLoop, COIN_POOL_SIZE, COIN_OPTIONS } from "../babylon-context.js";
-import { showUI } from "../ui/ui-utils.js";
-import { setVisibility, setVisibilityInherit, setDisplay } from "../dom-utils.js";
+import { setVisibility, setDisplay } from "../dom-utils.js";
 import { cpuSelect } from "./cpu.js";
 import { SAVE_DATA } from "../savedata.js";
 
@@ -48,6 +47,8 @@ const COIN_MOVE_FUNC_KEY = "COIN_MOVE";
 
 
 const turnElement = document.getElementById("turn");
+const firstElement = document.getElementById("first");
+const secondElement = document.getElementById("second");
 const coinGetElement = document.getElementById("coin-get");
 const coinCountHtml = document.getElementById("coin-count");
 const cpuCoinsHtml = document.getElementById("cpu-coins");
@@ -81,23 +82,27 @@ let nextStage = false;
  * 
  * @param {StageSettings} settings 
  */
-export function startStage(settings) {
-    // コインの選択肢を消しておく
-    setVisibility(coinGetElement, false);
+export async function startStage(settings) {
+    // 開始のSE（user gestureがない場合はならないこともある）
+    BabylonContext.playStartSound();
 
     // コインの総数を表示
     coinCountHtml.textContent = coinCount = settings.getCoinCount();
 
     initCoins(settings);
+   
 
-    // // 先攻後攻決め
-    // showUI(turnElement, true);
+    // 先攻後攻決め
+    setDisplay(turnElement, true);
+    Promise.any([
+        new Promise(resolve => {firstElement.onclick =() => resolve(true)}),
+        new Promise(resolve => {secondElement.onclick =() => resolve(false)})
+    ]).then(isPlayerTurn => {
+        setDisplay(turnElement, false);
 
-    // 開始のSE（user gestureがない場合はならないこともある）
-    BabylonContext.playStartSound();
-
-    // 開発用
-    coinGet(true);
+        // コイン取得へ
+        coinGet(isPlayerTurn);
+        });
 }
 
 /**
@@ -242,16 +247,13 @@ async function coinGet(isPlayerTurn) {
             const enable = select <= coinCount;
             if (enable) {
                 selectArray.push(new Promise(resolve => {button.onclick =() => resolve(select)}));
-                // visibleにしてしまうと親要素がhiddenでも見えてしまうためinherit
-                setVisibilityInherit(button);
-            } else {
-                setVisibility(button, false);
             }
+            setVisibility(button, enable);
             
         }
-        setVisibility(coinGetElement, true);
+        setDisplay(coinGetElement, true);
         await Promise.any(selectArray).then(selected => {
-            setVisibility(coinGetElement, false);
+            setDisplay(coinGetElement, false);
             playCoinTakeAnimation(selected, isPlayerTurn);
 
            syncCoins(selected, isPlayerTurn);
@@ -346,14 +348,7 @@ async function playCoinTakeAnimation(count, isPlayerTurn) {
 
 }
 
-document.getElementById("first").onclick = () => {
-    coinGet(true);
-    showUI(ID_TURN, false);
-};
-document.getElementById("second").onclick = () => {
-    coinGet(false);
-    showUI(ID_TURN, false);
-};
+
 
 // リトライ
 resultWrapperHtml.addEventListener("click", (ev) => {
