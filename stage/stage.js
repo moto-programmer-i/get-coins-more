@@ -3,7 +3,7 @@ import { STAGE_SETTINGS, StageSettings } from "./stage-settings.js";
 import { BOTTOM_COIN_COUNT, BOTTOM_VALUE } from "./rule.js";
 import { BabylonContext, FuncInPhysicsLoop, COIN_POOL_SIZE, COIN_OPTIONS } from "../babylon-context.js";
 import { showUI } from "../ui/ui-utils.js";
-import { setVisibility, setDisplay } from "../dom-utils.js";
+import { setVisibility, setVisibilityInherit, setDisplay } from "../dom-utils.js";
 import { cpuSelect } from "./cpu.js";
 import { SAVE_DATA } from "../savedata.js";
 
@@ -82,6 +82,9 @@ let nextStage = false;
  * @param {StageSettings} settings 
  */
 export function startStage(settings) {
+    // コインの選択肢を消しておく
+    setVisibility(coinGetElement, false);
+
     // コインの総数を表示
     coinCountHtml.textContent = coinCount = settings.getCoinCount();
 
@@ -220,9 +223,14 @@ async function coinGet(isPlayerTurn) {
             isPlayerTurn = true;
         }
 
+        // CPUが全てのコインを取得したら終了
+        if(coinCount <= 0) {
+            break;
+        }
         
         // プレイヤーの処理
-        showUI(coinGetElement, true);
+        
+    
 
 
         // 選択肢が押されるのを待つ
@@ -234,10 +242,16 @@ async function coinGet(isPlayerTurn) {
             const enable = select <= coinCount;
             if (enable) {
                 selectArray.push(new Promise(resolve => {button.onclick =() => resolve(select)}));
+                // visibleにしてしまうと親要素がhiddenでも見えてしまうためinherit
+                setVisibilityInherit(button);
+            } else {
+                setVisibility(button, false);
             }
-            setVisibility(button, enable);
+            
         }
+        setVisibility(coinGetElement, true);
         await Promise.any(selectArray).then(selected => {
+            setVisibility(coinGetElement, false);
             playCoinTakeAnimation(selected, isPlayerTurn);
 
            syncCoins(selected, isPlayerTurn);
