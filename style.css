@@ -51,7 +51,14 @@ img {
 
 button {
     line-height: 3ex;
-    background-color: black;
+    background: #F7DD33;
+    color: white;
+    border: 4px solid #F7DD33;
+    border-radius: 30px;
+    font-weight: bold;
+    -webkit-text-stroke: 0.4px black;
+    /* text-shadow: 3px 3px 8px black; */
+    box-shadow:1px 1px 6px 0px white inset;
 }
 
 .number {
@@ -87,7 +94,7 @@ button {
 
 #coin-count-wrapper {
     margin-block-start: 0px;
-    text-shadow: 5px 5px 5px black;
+    margin-left: 10px;
 }
 #cpu-coins-wrapper {
     margin-left: auto;
