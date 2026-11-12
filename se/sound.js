@@ -8,5 +8,5 @@ export const SOUND_SOURCES = {
 export const SOUND_OPTIONS = {
     // 前ディレイ
     getBottom: {waitTime: 0.15},
-    win: {waitTime: 0.4}
+    win: {waitTime: 0.1}
 }
