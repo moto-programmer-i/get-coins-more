@@ -13,9 +13,15 @@ canvas {
     height: 100%;
 }
 
-p, button, table, img {
+h1, p, button, table, img {
     font-size: xxx-large;
     color: white;
+}
+
+h1 {
+    margin-block-start: 0.2em;
+    color: lightgoldenrodyellow;
+    text-shadow: 5px 5px 0px black;
 }
 
 p {
