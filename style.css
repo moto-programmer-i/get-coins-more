@@ -14,7 +14,7 @@ canvas {
 }
 
 h1, p, button, table, img {
-    font-size: xxx-large;
+    font-size: 40px;
     color: white;
 }
 
