@@ -2,7 +2,7 @@ import { setMeshVisible } from "@babylonjs/lite";
 import { STAGE_SETTINGS, StageSettings } from "./stage-settings.js";
 import { BOTTOM_COIN_COUNT, BOTTOM_VALUE } from "./rule.js";
 import { BabylonContext, FuncInPhysicsLoop, COIN_POOL_SIZE, COIN_OPTIONS } from "../babylon-context.js";
-import { setVisibility, setDisplay } from "../dom-utils.js";
+import { setVisibility, setVisibilityToInherit, setDisplay } from "../dom-utils.js";
 import { cpuSelect } from "./cpu.js";
 import { SAVE_DATA } from "../savedata.js";
 
@@ -91,6 +91,9 @@ export async function startStage(settings) {
 
     initCoins(settings);
    
+    // 上のYouの位置がずれるため、非表示でも選択肢の領域が必要だったので
+    // ここで消さないといけない。かなりキモい。
+    setDisplay(coinGetElement, false);
 
     // 先攻後攻決め
     setDisplay(turnElement, true);
@@ -99,6 +102,9 @@ export async function startStage(settings) {
         new Promise(resolve => {secondElement.onclick =() => resolve(false)})
     ]).then(isPlayerTurn => {
         setDisplay(turnElement, false);
+
+        // 上のYouの位置がずれるため、非表示でも選択肢の領域が必要
+        setDisplay(coinGetElement, true);
 
         // コイン取得へ
         coinGet(isPlayerTurn);
@@ -244,16 +250,17 @@ async function coinGet(isPlayerTurn) {
         // 2個以上の選択肢は足りない場合は非表示
         for(let select = 2;  select <= MAX_SELECTION; ++select) {
             const button = selectButtons.item(select - 1);
-            const enable = select <= coinCount;
-            if (enable) {
+            if (select <= coinCount) {
                 selectArray.push(new Promise(resolve => {button.onclick =() => resolve(select)}));
+                setVisibilityToInherit(button);
+            } else {
+                setVisibility(button, false);
             }
-            setVisibility(button, enable);
             
         }
-        setDisplay(coinGetElement, true);
+        setVisibility(coinGetElement, true);
         await Promise.any(selectArray).then(selected => {
-            setDisplay(coinGetElement, false);
+            setVisibility(coinGetElement, false);
             playCoinTakeAnimation(selected, isPlayerTurn);
 
            syncCoins(selected, isPlayerTurn);
