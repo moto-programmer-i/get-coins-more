@@ -5,6 +5,7 @@ import { BabylonContext, FuncInPhysicsLoop, COIN_POOL_SIZE, COIN_OPTIONS } from 
 import { setVisibility, setVisibilityToInherit, setDisplay } from "../dom-utils.js";
 import { cpuSelect } from "./cpu.js";
 import { SAVE_DATA } from "../savedata.js";
+import { Platform } from "../platform/platform.js";
 
 
 
@@ -83,6 +84,8 @@ let nextStage = false;
  * @param {StageSettings} settings 
  */
 export async function startStage(settings) {
+    Platform.getCurrent().startOfStage();
+
     // 開始のSE（user gestureがない場合はならないこともある）
     BabylonContext.playStartSound();
 
@@ -194,6 +197,9 @@ async function showResult() {
     
     // 結果を表示
     setVisibility(resultWrapperHtml, true);
+
+
+    Platform.getCurrent().endOfStage();
 }
 
 async function syncCoins(selected, isPlayerTurn) {

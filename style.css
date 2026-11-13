@@ -14,12 +14,12 @@ canvas {
 }
 
 h1, p, button, table, img {
-    font-size: 40px;
+    font-size: 2rem;
     color: white;
 }
 
 h1 {
-    margin-block-start: 0.2em;
+    margin-block-start: 0;
     color: lightgoldenrodyellow;
     text-shadow: 5px 5px 0px black;
 }
@@ -30,7 +30,6 @@ p {
 }
 
 img {
-    display: block;
     width: auto;
     height: auto;
 }
@@ -52,7 +51,7 @@ img {
 }
 
 #rule img {
-    height: 5ex;    
+    height: 3ex;
 }
 
 button {
@@ -199,4 +198,18 @@ button {
 }
 .title.draw {
     color: #00ff00;
+}
+
+#loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    text-align: center;
+    order: 10666;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

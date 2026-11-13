@@ -6,12 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Get Coins More</title>
   <script type="importmap">
-      {
-        "imports": {
-          "@babylonjs/lite": "./3rdparties/babylonlite/index.js"
-        }
+    {
+      "imports": {
+        "@babylonjs/lite": "./3rdparties/babylonlite/index.js"
       }
-    </script>
+    }
+  </script>
+  <script src="https://game-cdn.poki.com/scripts/v2/poki-sdk.js" defer></script>
   <script type="module" src="./main.js" defer></script>
   <link rel="stylesheet" href="./style.css" type="text/css">
 </head>
@@ -92,16 +93,21 @@
 
   </div>
   <div id="rule">
+    
     <h1>Get Coins More</h1>
     <p>
       Each player can get up to 3 coins. <br>
       <span class="caution">Caution: The bottom one is 10x value.</span>
+      <img src="./rule/bottom.jpg" alt="the bottom one's value is 10.">
       <br>
     </p>
-    <img src="./rule/bottom.jpg" alt="the bottom one's value is 10.">
-    <br>
     <br>
     <button>start</button>
+  </div>
+  <div id="loading">
+    <p>
+      Now Loading...
+    </p>
   </div>
 </body>
 
