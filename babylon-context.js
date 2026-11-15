@@ -145,7 +145,9 @@ export class BabylonContext {
                 }
             }).bind(this),
             LOOP_INTERVAL_MILLISECONDS);
-        window.addEventListener("unload", (ev) => clearInterval(BabylonContext.getPhysicsLoopID()));
+        // unloadは非推奨
+        // https://developer.chrome.com/docs/web-platform/deprecating-unload?hl=ja
+        window.addEventListener("pagehide", (ev) => clearInterval(BabylonContext.getPhysicsLoopID()));
     }
 
     static getEngine() {
