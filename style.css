@@ -121,7 +121,9 @@ button {
 }
 
 #coin-get {
+    /* 画面配置の都合上両方必要になった */ 
     display: none;
+    visibility: hidden;
 }
 
 .selection {
