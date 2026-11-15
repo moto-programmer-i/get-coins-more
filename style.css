@@ -204,18 +204,18 @@ button {
     color: #00ff00;
 }
 
+.loading-parent {
+    position: relative
+}
 #loading {
-    position: fixed;
+    display: none;
+    position: absolute;
     top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    text-align: center;
     order: 10666;
-    background-color: rgba(0, 0, 0, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background-color: rgba(0, 0, 0, 0.9);
+    white-space: nowrap;
+    padding: 1rem;
+    translate: -5em -1ex;
 }
 
 #rewarded-selection {

@@ -8,6 +8,28 @@ import { setDisplay } from "./dom-utils.js";
 import { Platform } from "./platform/platform.js";
 import { Poki } from "./platform/poki/poki.js";
 
+const loadingElement = document.getElementById("loading");
+
+let isLoading = true;
+let startPressed = false;
+
+async function start() {
+    setDisplay(rule, false);
+    startStage(STAGE_SETTINGS[SAVE_DATA.stageIndex]);
+}
+
+
+document.getElementById("rule").onclick = () => {
+    startPressed = true;
+    // ローディングが完了してない場合はだす
+    if (isLoading) {
+        setDisplay(loadingElement, true);
+        return;
+    }
+    start();
+};
+
+
 const platform = new Platform();
 // Poki版
 // const platform = new Poki();
@@ -19,16 +41,16 @@ await platform.init();
 
 await BabylonContext.init(document.getElementById("renderCanvas"));
 
-
+isLoading = false;
 platform.loadingFinished();
 
+// ローディング後、すでにstartが押されていたらスタート
+if (startPressed) {
+    start();
+}
 
-// 準備完了後に押せるようにする
-setDisplay(document.getElementById("loading"), false);
-document.getElementById("rule").onclick = () => {
-    setDisplay(rule, false);
-    startStage(STAGE_SETTINGS[SAVE_DATA.stageIndex]);
-};
+
+
 
 
 
