@@ -30,9 +30,9 @@ document.getElementById("rule").onclick = () => {
 };
 
 
-const platform = new Platform();
+// const platform = new Platform();
 // Poki版
-// const platform = new Poki();
+const platform = new Poki();
 
 
 Platform.setCurrent(platform);
