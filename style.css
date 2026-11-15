@@ -217,3 +217,13 @@ button {
     justify-content: center;
     align-items: center;
 }
+
+#rewarded-selection {
+    background-color: darkviolet;
+    border: none;
+    color: black;
+}
+.play-ad {
+    color: black;
+    border: solid 2px black;
+}
