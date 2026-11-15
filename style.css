@@ -144,7 +144,9 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20%;
+    /* gapを%で書くとなぜかボタンがはみでた
+    /* gap: 20%; */
+    gap: 3rem;
 }
 
 .buttons.number > button {
