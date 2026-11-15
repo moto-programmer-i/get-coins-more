@@ -8,6 +8,15 @@ import { setDisplay } from "./dom-utils.js";
 import { Platform } from "./platform/platform.js";
 import { Poki } from "./platform/poki/poki.js";
 
+// https://developers.poki.com/guide/sdk-html5#prevent-page-jump
+window.addEventListener('keydown', ev => {
+    if (['ArrowDown', 'ArrowUp', ' '].includes(ev.key)) {
+        ev.preventDefault();
+    }
+});
+window.addEventListener('wheel', ev => ev.preventDefault(), { passive: false });
+
+
 const loadingElement = document.getElementById("loading");
 
 let isLoading = true;
