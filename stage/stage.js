@@ -23,6 +23,9 @@ const  CPU_SELECT_MILLISECONDS = 400;
 /** コインをとる選択肢の最大 */
 const MAX_SELECTION = 3;
 
+/** 広告動画視聴後のコインをとる選択肢 */
+const REWARDED_SELECTION = 4;
+
 
 
 
@@ -55,6 +58,7 @@ const coinCountHtml = document.getElementById("coin-count");
 const cpuCoinsHtml = document.getElementById("cpu-coins");
 const playerCoinsHtml = document.getElementById("player-coins");
 const selectButtons = document.getElementById("selection").children;
+const rewardedSelectButton = document.getElementById("rewarded-selection");
 const resultWrapperHtml = document.getElementById("result-wrapper");
 const resultWinHtml = document.getElementById("result-win");
 const resultDefeatHtml = document.getElementById("result-defeat");
@@ -262,7 +266,17 @@ async function coinGet(isPlayerTurn) {
             } else {
                 setVisibility(button, false);
             }
-            
+        }
+        // 広告動画視聴でとれる選択肢
+        if (coinCount >= REWARDED_SELECTION) {
+            selectArray.push(new Promise(resolve => {rewardedSelectButton.onclick = async () => {
+                if (await Platform.getCurrent().reward()) {
+                    resolve(REWARDED_SELECTION);
+                }
+            }}));
+            setVisibilityToInherit(rewardedSelectButton);
+        } else {
+            setVisibility(rewardedSelectButton, false);
         }
         setVisibility(coinGetElement, true);
         await Promise.any(selectArray).then(selected => {

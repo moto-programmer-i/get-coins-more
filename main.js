@@ -6,10 +6,13 @@ import { STAGE_SETTINGS } from "./stage/stage-settings.js";
 import { BabylonContext } from "./babylon-context.js";
 import { setDisplay } from "./dom-utils.js";
 import { Platform } from "./platform/platform.js";
-import { Poki } from "./poki/poki.js";
+import { Poki } from "./platform/poki/poki.js";
 
+const platform = new Platform();
 // Poki版
-const platform = new Poki();
+// const platform = new Poki();
+
+
 Platform.setCurrent(platform);
 await platform.init();
 

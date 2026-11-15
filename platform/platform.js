@@ -2,6 +2,9 @@
  * Poki, Crazygamesなどの対応インターフェース
  */
 export class Platform {
+    /**
+     * @type {Platform}
+     */
     static #current;
     /**
      * 
@@ -23,5 +26,13 @@ export class Platform {
     startOfStage() {
     }
     endOfStage() {
+    }
+
+    /**
+     * 広告動画視聴
+     * @returns true: 報酬あり
+     */
+    async reward() {
+        return false;
     }
 }
