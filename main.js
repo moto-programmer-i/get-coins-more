@@ -6,7 +6,6 @@ import { STAGE_SETTINGS } from "./stage/stage-settings.js";
 import { BabylonContext } from "./babylon-context.js";
 import { setDisplay } from "./dom-utils.js";
 import { Platform } from "./platform/platform.js";
-import { Poki } from "./platform/poki/poki.js";
 
 // https://developers.poki.com/guide/sdk-html5#prevent-page-jump
 window.addEventListener('keydown', ev => {
@@ -39,9 +38,7 @@ document.getElementById("rule").onclick = () => {
 };
 
 
-// const platform = new Platform();
-// Poki版
-const platform = new Poki();
+const platform = new Platform();
 
 
 Platform.setCurrent(platform);

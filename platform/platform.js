@@ -33,6 +33,7 @@ export class Platform {
      * @returns true: 報酬あり
      */
     async reward() {
-        return false;
+        alert("In release version, you watch a video ad.");
+        return true;
     }
 }
