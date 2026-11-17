@@ -1,4 +1,8 @@
 ﻿temp
+for-upload
+
+# platform
+platform/poki
 
 # リンクはいつでも含める
 !*.url
