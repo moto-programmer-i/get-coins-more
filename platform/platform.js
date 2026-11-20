@@ -36,4 +36,12 @@ export class Platform {
         alert("In release version, you watch a video ad.");
         return true;
     }
+
+    /**
+     * 広告ありか
+     * @returns 
+     */
+    hasAd() {
+        return true;
+    }
 }

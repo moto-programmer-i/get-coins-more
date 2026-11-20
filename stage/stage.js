@@ -268,16 +268,22 @@ async function coinGet(isPlayerTurn) {
             }
         }
         // 広告動画視聴でとれる選択肢
-        if (coinCount >= REWARDED_SELECTION) {
-            selectArray.push(new Promise(resolve => {rewardedSelectButton.onclick = async () => {
-                if (await Platform.getCurrent().reward()) {
-                    resolve(REWARDED_SELECTION);
-                }
-            }}));
-            setVisibilityToInherit(rewardedSelectButton);
+        const platform = Platform.getCurrent();
+        if (platform.hasAd()) {
+            if (coinCount >= REWARDED_SELECTION) {
+                selectArray.push(new Promise(resolve => {rewardedSelectButton.onclick = async () => {
+                    if (await platform.reward()) {
+                        resolve(REWARDED_SELECTION);
+                    }
+                }}));
+                setVisibilityToInherit(rewardedSelectButton);
+            } else {
+                setVisibility(rewardedSelectButton, false);
+            }
         } else {
-            setVisibility(rewardedSelectButton, false);
+            setDisplay(rewardedSelectButton, false);
         }
+        
         setVisibility(coinGetElement, true);
         await Promise.any(selectArray).then(selected => {
             setVisibility(coinGetElement, false);

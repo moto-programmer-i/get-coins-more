@@ -6,6 +6,7 @@ import { STAGE_SETTINGS } from "./stage/stage-settings.js";
 import { BabylonContext } from "./babylon-context.js";
 import { setDisplay } from "./dom-utils.js";
 import { Platform } from "./platform/platform.js";
+import { CoolMathGames } from "./platform/cool-math-games/cool-math-games.js";
 
 // https://developers.poki.com/guide/sdk-html5#prevent-page-jump
 window.addEventListener('keydown', ev => {
@@ -38,7 +39,8 @@ document.getElementById("rule").onclick = () => {
 };
 
 
-const platform = new Platform();
+// const platform = new Platform();
+const platform = new CoolMathGames();
 
 
 Platform.setCurrent(platform);
